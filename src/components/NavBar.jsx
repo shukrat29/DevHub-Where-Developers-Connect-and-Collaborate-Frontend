@@ -1,18 +1,35 @@
+import axios from "axios";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { removeUser } from "../utils/userSlice";
 
 const NavBar = () => {
   const user = useSelector((store) => store.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.post(
+        import.meta.env.VITE_BASE_URL + "/logout",
+        {},
+        { withCredentials: true }
+      );
+      dispatch(removeUser());
+      return navigate("/login");
+    } catch (error) {}
+  };
   return (
     <div className="navbar bg-blue-950 shadow-lg">
       <div className="flex-1">
-        <a className="btn btn-ghost text-3xl text-white">
+        <Link to="/" className="btn btn-ghost text-3xl text-white">
           <img
             className="h-12 rounded-full"
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR73df7crRMeE4RV_fZkOph3FftYqjc2jbemc_ISBT70w&s"
           />
           <h1>DEVHUB</h1>
-        </a>
+        </Link>
       </div>
       {user && (
         <div className="flex-none gap-2">
@@ -32,19 +49,31 @@ const NavBar = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-55 p-2 shadow"
             >
               <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
+                <Link to="/profile" className="justify-between">
+                  My Profile
+                </Link>
               </li>
               <li>
-                <a>Settings</a>
+                <Link to="/" className="justify-between">
+                  Browse Feed
+                </Link>
               </li>
               <li>
-                <a>Logout</a>
+                <Link to="/connections" className="justify-between">
+                  Friends
+                </Link>
+              </li>
+              <li>
+                <Link to="/requests" className="justify-between">
+                  Requests
+                </Link>
+              </li>
+
+              <li>
+                <a onClick={handleLogout}>Logout</a>
               </li>
             </ul>
           </div>
